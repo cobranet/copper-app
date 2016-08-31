@@ -31,35 +31,48 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	 padding: 10px;
      }
      .upleft {
-	 font-size: 50%;
+	 font-size: 60%;
 	 text-align: left;
+	 padding-top: 3px;
+	 padding-left: 3px;
+     }
+     .results {
+	 background-color: blue;
+	 color: white;
+	 margin-left: 10px;
      }
      .result {
+	 font-size: 200%;
+	 text-align: center;
+     }
+     .rnumber {
+	 text-align: right;
      }
     </style>
     <div class="layout vertical">
 	<div class="layout horizontal checkboxes">
 	    <div class="flex">
 		<paper-radio-button id="byamount"   checked="{{byAmount}}" checked>By amount and term</paper-radio-button>
-		<!-- </div>
-		     <div class="flex"> -->
 		<paper-radio-button id="byannuity" checked="{{byAnnuity}}">By term and annuity</paper-radio-button>
 	    </div>
 	</div>
 	<div class="layout horizontal amounts ">
 	    <div class="flex">
-		<paper-input on-change="_changeInAmount" label="Amount" value="{{inAmount}}"></paper-input>
+		<paper-input class="rnumber" on-change="_changeInAmount" label="Amount" value="{{inAmount}}"></paper-input>
 	    </div>
 	    <div class="flex">
-		<paper-input on-change="_changeActualAmount"label="Actual Amount" value="{{actualAmount}}"></paper-input>
+		<paper-input class="rnumber" on-change="_changeActualAmount"  label="Actual Amount" value="{{actualAmount}}">
+		</paper-input>
 	    </div>
 	</div>
 	<div class="layout horizontal instalments ">
 	    <div class="flex">
-		<paper-input on-change="_changeDownpayment" label="Downpayment" value="{{downpayment}}"></paper-input>
+		<paper-input class="rnumber" on-change="_changeDownpayment" label="Downpayment" value="{{downpayment}}"></paper-input>
 	    </div>
 	    <div class="flex">
-		<paper-input on-change="_changeDownpaymentPercent" label="Downpayment %" value="{{downpaymentPercent}}" >{{termUnitOfTime}}</paper-input>
+		<paper-input class="rnumber" on-change="_changeDownpaymentPercent" label="Downpayment %" value="{{downpaymentPercent}}" >
+		    <div suffix>%</div>
+		</paper-input>
 	    </div>
 	</div>
 	<div class="layout horizontal instalments ">
@@ -70,16 +83,41 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 		<paper-toggle-button on-change="_changeMonthOrYear"  checked="{{monthoryear}}">{{termUnitOfTime}}</paper-toggle-button>
 	    </div>
 	</div>
-	<div class="layout horizontal discount">
+	<div class="layout horizontal rates">
+	    <div class="flex">
+		<paper-input label="Interest rate by product" value="{{product.rate}}"></paper-input>
+	    </div>
 	    <div class="flex">
 		<paper-input label="Discount" value="{{discount}}"></paper-input>
 	    </div>
+	    <div class="flex">
+		<paper-input label="Calculated interest rate" value="{{discount}}"></paper-input>
+	    </div>
+
 	</div>
-	<div class="layout horizontal results">
+	<div class="layout horizontal allresults">
 	    <div class="flex results">
 		<div class="layout vertical res">
 		    <div class="upleft" >Amount</div>
+		    <div class="result">{{inAmount}}&nbspEUR</div>
+		</div>
+	    </div>
+	    <div class="flex results">
+		<div class="layout vertical res">
+		    <div class="upleft" >Actual amount</div>
+		    <div class="result">{{actualAmount}}&nbspEUR</div>
+		</div>
+	    </div>
+	    <div class="flex results">
+		<div class="layout vertical res">
+		    <div class="upleft" >Annuity</div>
 		    <div class="result">10000 EUR</div>
+		</div>
+	    </div>
+	    <div class="flex results">
+		<div class="layout vertical res">
+		    <div class="upleft">Term</div>
+		    <div class="result">{{numOfInstallments}}{{termUnitOfTime}}</div>
 		</div>
 	    </div>
 	    
@@ -95,6 +133,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	    'change' : 'change'
 	},
 	properties: {
+	    product: {
+		type: Object
+	    },
 	    byAmount: {
 		type: Boolean,
 		value: true,
@@ -158,12 +199,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	    var down = this.downpayment || 0;
 	    if ( this.inAmount ) {
 		this.actualAmount = this.inAmount - down;
-		this.downpaymentPercent = Math.round( down / this.inAmount  / 100 );
+		this.downpaymentPercent = Math.round( 100 * down / this.inAmount);
 		return;
 	    } 
 	    if (this.actualAmount) {
 		this.inAmount = down + Number(this.actualAmount);
-		this.downpaymentPercent = Math.round( down / this.inAmount / 100 );
+		this.downpaymentPercent = Math.round( 100 * down / this.inAmount );
 	    }
 	    
 	},
