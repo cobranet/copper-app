@@ -1,0 +1,126 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="cu-onesim">
+  <template>
+    <style include="shared-styles iron-flex iron-flex-aligment">
+      :host {
+          display: block;
+          padding: 10px;
+      }
+     paper-input {
+	 padding: 10px;
+     }
+    </style>
+    <div class="layout vertical">
+	<div class="layout horizontal checkboxes">
+	    <div class="flex">
+		<paper-radio-button id="byamount"   checked="{{byAmount}}" checked>By Amount</paper-radio-button>
+	    </div>
+	    <div class="flex">
+		<paper-radio-button id="byannuity" checked="{{byAnnuity}}">By Annuity</paper-radio-button>
+	    </div>
+	</div>
+	<div class="layout horizontal amounts ">
+	    <div class="flex">
+		<paper-input id="inamount" label="Amount" value="{{inAmount}}"></paper-input>
+	    </div>
+	    <div class="flex">
+		<paper-input label="Actual Amount" value="{{actualAmount}}"></paper-input>
+	    </div>
+	</div>
+	<div class="layout horizontal downpayments ">
+	    <div class="flex">
+		<paper-input label="Downpayment" value="{{downpayment}}"></paper-input>
+	    </div>
+	    <div class="flex">
+		<paper-input label="Downpayment %" value="{{downpaymentPercent}}"></paper-input>
+	    </div>
+	</div>
+	
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+	is: 'cu-onesim',
+	listeners: {
+	    'change' : 'change'
+	},
+	properties: {
+	    byAmount: {
+		type: Boolean,
+		value: true,
+		notify: true
+	    },
+	    downpayment: {
+		type: Number,
+		notify: true
+	    },
+	    downpaymentPercent: {
+		type: Number,
+		notify: true
+	    },
+	    byAnnuity: {
+		type: Boolean,
+		value: false,
+		notify: true
+	    },
+	    inAmount: {
+		type : Number,
+		notify: true
+	    },
+	     
+	    maxAmount: {
+		type: Number
+	    }
+
+	},
+	changeAmount: function(){
+	    alert("amount changed");
+	},
+	change: function(e){
+	    alert(e.target.id);
+	    switch(e.target.id){
+		case 'byamount': {
+		    if ( this.byAmount === true ) {
+			this.byAnnuity= false;
+		    } else {
+			this.byAnnuity = true;
+		    }
+		};
+		break;
+		case 'byannuity': {
+		    if ( this.byAnnuity === true ) {
+			this.byAmount = false;
+		    } else {
+			this.byAmount = true;
+		    }
+		}
+		break;
+		case 'inamount': {
+		    alert('IN in' + e.target.id);
+		    this.changeAmount();
+		}
+		default: {}
+		    
+	    }
+	}
+    });
+  </script>
+</dom-module>
