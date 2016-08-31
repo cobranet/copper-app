@@ -12,6 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/paper-radio-button/paper-radio-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel="import" href="shared-styles.html">
@@ -26,31 +27,62 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      paper-input {
 	 padding: 10px;
      }
+     paper-radio-button {
+	 padding: 10px;
+     }
+     .upleft {
+	 font-size: 50%;
+	 text-align: left;
+     }
+     .result {
+     }
     </style>
     <div class="layout vertical">
 	<div class="layout horizontal checkboxes">
 	    <div class="flex">
-		<paper-radio-button id="byamount"   checked="{{byAmount}}" checked>By Amount</paper-radio-button>
-	    </div>
-	    <div class="flex">
-		<paper-radio-button id="byannuity" checked="{{byAnnuity}}">By Annuity</paper-radio-button>
+		<paper-radio-button id="byamount"   checked="{{byAmount}}" checked>By amount and term</paper-radio-button>
+		<!-- </div>
+		     <div class="flex"> -->
+		<paper-radio-button id="byannuity" checked="{{byAnnuity}}">By term and annuity</paper-radio-button>
 	    </div>
 	</div>
 	<div class="layout horizontal amounts ">
 	    <div class="flex">
-		<paper-input id="inamount" label="Amount" value="{{inAmount}}"></paper-input>
+		<paper-input on-change="_changeInAmount" label="Amount" value="{{inAmount}}"></paper-input>
 	    </div>
 	    <div class="flex">
-		<paper-input label="Actual Amount" value="{{actualAmount}}"></paper-input>
+		<paper-input on-change="_changeActualAmount"label="Actual Amount" value="{{actualAmount}}"></paper-input>
 	    </div>
 	</div>
-	<div class="layout horizontal downpayments ">
+	<div class="layout horizontal instalments ">
 	    <div class="flex">
-		<paper-input label="Downpayment" value="{{downpayment}}"></paper-input>
+		<paper-input on-change="_changeDownpayment" label="Downpayment" value="{{downpayment}}"></paper-input>
 	    </div>
 	    <div class="flex">
-		<paper-input label="Downpayment %" value="{{downpaymentPercent}}"></paper-input>
+		<paper-input on-change="_changeDownpaymentPercent" label="Downpayment %" value="{{downpaymentPercent}}" >{{termUnitOfTime}}</paper-input>
 	    </div>
+	</div>
+	<div class="layout horizontal instalments ">
+	    <div class="flex">
+		<paper-input label="Number of installments" value="{{numOfInstallments}}"></paper-input>
+	    </div>
+	    <div>
+		<paper-toggle-button on-change="_changeMonthOrYear"  checked="{{monthoryear}}">{{termUnitOfTime}}</paper-toggle-button>
+	    </div>
+	</div>
+	<div class="layout horizontal discount">
+	    <div class="flex">
+		<paper-input label="Discount" value="{{discount}}"></paper-input>
+	    </div>
+	</div>
+	<div class="layout horizontal results">
+	    <div class="flex results">
+		<div class="layout vertical res">
+		    <div class="upleft" >Amount</div>
+		    <div class="result">10000 EUR</div>
+		</div>
+	    </div>
+	    
 	</div>
 	
     </div>
@@ -66,6 +98,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	    byAmount: {
 		type: Boolean,
 		value: true,
+		notify: true
+	    },
+	    termUnitOfTime : {
+		type: String,
+		value: "M",
+		notify: true
+	    },
+	    numOfInstallments: {
+		type : Number,
 		notify: true
 	    },
 	    downpayment: {
@@ -85,17 +126,86 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 		type : Number,
 		notify: true
 	    },
-	     
+	    actualAmount: {
+		type : Number,
+		notify: true
+	    },
+	    discount: {
+		type: Number,
+		notify: true
+	    },
 	    maxAmount: {
 		type: Number
 	    }
 
 	},
-	changeAmount: function(){
-	    alert("amount changed");
+	_changeInAmount: function(){
+	    var down = 0;
+	    var downPercent = 0;
+	    if (this.downpayment) {
+		down = this.downpayment;
+	    } else {
+		if (this.downpaymentPercent) {
+		    down = Math.round(this.inAmount * this.downpaymentPercent / 100) ;
+		}  
+	    }
+	    this.actualAmount = this.inAmount - down;
+	    this.downpayment = down;
+	    this.downpaymentPercent = Math.round(100 * down / this.inAmount);
 	},
+
+	_changeDownpayment: function(){
+	    var down = this.downpayment || 0;
+	    if ( this.inAmount ) {
+		this.actualAmount = this.inAmount - down;
+		this.downpaymentPercent = Math.round( down / this.inAmount  / 100 );
+		return;
+	    } 
+	    if (this.actualAmount) {
+		this.inAmount = down + Number(this.actualAmount);
+		this.downpaymentPercent = Math.round( down / this.inAmount / 100 );
+	    }
+	    
+	},
+
+	_changeDownpaymentPercent: function(){
+
+	    var downPercent = this.downpaymentPercent || 0;
+	    if ( this.inAmount ) {
+		this.downpayment = Math.round(this.inAmount * downPercent / 100);
+		this.actualAmount = this.inAmount - this.downpayment;
+		return;
+	    }
+	    if (this.actualAmount) {
+		this.downpayment = Math.round(this.ActualAmount * (1 / ( 1 - downPercent )));
+		this.inAmount = Number(this.downpayment) + Number(this.actualAmount);
+	    }
+	},
+	
+	_changeMonthOrYear: function(e){
+	    if(this.monthoryear === true ){
+		this.termUnitOfTime = 'M';
+	    } else {
+		this.termUnitOfTime = 'Y';
+	    }
+	},
+	
+	_changeActualAmount: function(){
+	    var down = 0;
+	    var downPercent = 0;
+	    if (this.downpayment) {
+		down = this.downpayment;
+	    } else {
+		if (this.downpaymentPercent) {
+		    down = Math.round(this.actualAmount * this.downpaymentPercent / 100) ;
+		}  
+	    }
+	    this.inAmount = Number(this.actualAmount) + Number(down);
+	    this.downpayment = down;
+	    this.downpaymentPercent = Math.round(100 * down / this.inAmount);
+	},
+	
 	change: function(e){
-	    alert(e.target.id);
 	    switch(e.target.id){
 		case 'byamount': {
 		    if ( this.byAmount === true ) {
@@ -113,12 +223,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 		    }
 		}
 		break;
-		case 'inamount': {
-		    alert('IN in' + e.target.id);
-		    this.changeAmount();
-		}
-		default: {}
-		    
 	    }
 	}
     });

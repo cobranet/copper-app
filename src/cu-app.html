@@ -22,7 +22,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="my-icons.html">
 
-<dom-module id="my-app">
+<dom-module id="cu-app">
   <template>
     <style>
       :host {
@@ -58,7 +58,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       .drawer-list a.iron-selected {
         color: black;
-
         font-weight: bold;
       }
     </style>
@@ -85,7 +84,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	    </a>
             <a name="view3" href="/products">
 		<iron-icon icon="home"></iron-icon><span>Products</span></a>
-	     
         </iron-selector>
       </app-drawer>
 
@@ -116,7 +114,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <script>
     Polymer({
-      is: 'my-app',
+      is: 'cu-app',
 
       properties: {
         page: {
