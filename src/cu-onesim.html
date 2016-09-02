@@ -12,9 +12,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/paper-radio-button/paper-radio-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
-<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
 
+
+<link rel="import" href="cu-product-list.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="cu-onesim">
@@ -37,7 +40,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	 padding-left: 3px;
      }
      .results {
-	 background-color: blue;
+	 background-color: var(--default-primary-color);
 	 color: white;
 	 margin-left: 10px;
      }
@@ -48,8 +51,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      .rnumber {
 	 text-align: right;
      }
+     .actions {
+	 margin-top: 10px;
+	 text-align: center;
+     }
+     .target {
+	 background-color: var(--dark-primary-color);
+     }
     </style>
     <div class="layout vertical">
+	<cu-product-list></cu-product-list>
+	
 	<div class="layout horizontal checkboxes">
 	    <div class="flex">
 		<paper-radio-button id="byamount"   checked="{{byAmount}}" checked>By amount and term</paper-radio-button>
@@ -70,7 +82,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 		<paper-input class="rnumber" on-change="_changeDownpayment" label="Downpayment" value="{{downpayment}}"></paper-input>
 	    </div>
 	    <div class="flex">
-		<paper-input class="rnumber" on-change="_changeDownpaymentPercent" label="Downpayment %" value="{{downpaymentPercent}}" >
+		<paper-input class="rnumber" on-change="_changeDownpaymentPercent" label="Downpayment percentage " value="{{downpaymentPercent}}" >
 		    <div suffix>%</div>
 		</paper-input>
 	    </div>
@@ -91,12 +103,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 		<paper-input label="Discount" value="{{discount}}"></paper-input>
 	    </div>
 	    <div class="flex">
-		<paper-input label="Calculated interest rate" value="{{discount}}"></paper-input>
+		<paper-input label="Calculated interest rate" value="{{_actualRate(product.rate,discont)}}"></paper-input>
 	    </div>
 
 	</div>
+	<!-- Results of calculations  -->
 	<div class="layout horizontal allresults">
-	    <div class="flex results">
+	    <div class$="{{_resultclasses(byAmount,byAnnuity,'AMOUNT')}}">
 		<div class="layout vertical res">
 		    <div class="upleft" >Amount</div>
 		    <div class="result">{{inAmount}}&nbspEUR</div>
@@ -120,7 +133,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 		    <div class="result">{{numOfInstallments}}{{termUnitOfTime}}</div>
 		</div>
 	    </div>
-	    
+	</div>
+
+	<div class="layout horizontal actions">
+	    <div class="flex calc">
+		<paper-button active raised>Calculate</paper-button>
+	    </div>
+	    <div class="flex print">
+		<paper-button raised>Repayment plan</paper-button>
+	    </div>
 	</div>
 	
     </div>
@@ -130,7 +151,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     Polymer({
 	is: 'cu-onesim',
 	listeners: {
-	    'change' : 'change'
+	    'change' : 'change',
+	    'product-selected' : 'productSelected'
 	},
 	properties: {
 	    product: {
@@ -176,9 +198,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 		notify: true
 	    },
 	    maxAmount: {
-		type: Number
+		type: Number,
+		notify: true
+	    },
+	    actualRate: {
+		type: Number,
+		notify: true
+	    }
+	},
+	productSelected: function(e,detail){
+	    this.product = detail.product;
+	},
+	_resultclasses: function(byAmount,byAnnuity,what){
+	    var cls = "flex results ";
+
+	    if (what === 'AMOUNT' && byAnnuity === true ) {
+		cls = cls + "target";
 	    }
 
+	    if(what === 'ANNUITY' && byAmount === true){
+		cls = cls + 'target';
+	    }
+	    return cls;
 	},
 	_changeInAmount: function(){
 	    var down = 0;
@@ -245,7 +286,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	    this.downpayment = down;
 	    this.downpaymentPercent = Math.round(100 * down / this.inAmount);
 	},
-	
+	_calcRate: function(prod,disc){
+	    var p = prod || 0;
+	    var d= disc || 0;
+	    return p-d;
+	},
 	change: function(e){
 	    switch(e.target.id){
 		case 'byamount': {

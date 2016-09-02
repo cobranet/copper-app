@@ -1,0 +1,113 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-dropdown/iron-dropdown.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+
+
+
+
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="cu-product-list">
+  <template>
+    <style include="shared-styles iron-flex iron-flex-aligment">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+     #list {
+	 background-color: var(--primary-background-color);
+     }
+     .smallcard {
+	 border-bottom-color: var(--light-primary-color);
+         border-bottom-style: solid;
+	 border-bottom-widht: 1px;
+     }
+    </style>
+    <div class ="search">
+	<div class="layout horizontal">
+	    <div hidden$="{{_isSelected(isSelected)}}" class="flex">
+		<iron-icon icon="search"></iron-icon>&nbspSelect product
+	    </div>
+	    <div hidden$="{{!_isSelected(isSelected)}}" class="flex">
+		<cu-small-product-card product="{{selected}}"></cu-small-product-card>
+	    </div>
+	    
+	    <iron-icon on-tap="_openList" icon="expand-more"></iron-icon>
+	</div>
+    </div>
+    <iron-dropdown id="droplist" horizontal-align="right" vertical-align="top">
+    <paper-card id="list" class="dropdown-content layout vertical">
+	<template is="dom-repeat" items="{{products}}">
+	    <div class="smallcard">
+		<cu-small-product-card product="{{item}}"></cu-small-product-card>
+	    </div>
+	</template>
+    </paper-card>
+    </iron-dropdown>
+  </template>
+
+  <script>
+    Polymer({
+	is: 'cu-product-list',
+	listeners: {
+	    'product-clicked' : 'selectProduct'
+	},
+	properties: {
+	    isOpen: {
+		type: Boolean,
+		value: false,
+		notify: true
+	    },
+	    isSelected: {
+		type: Boolean,
+		value: false,
+		notify: true
+		
+	    },
+	    selected: {
+		type: Object
+	    },
+	    products: {
+		type: Array
+	    }
+	},
+	_isSelected: function(selected){
+	    return this.isSelected;
+	},
+	_openList: function(){
+	    this.$.droplist.open();
+	    this.isOpen = true;
+	},
+	_isOpen: function(isOpen){
+	    return isOpen;
+	},
+	selectProduct: function(e,detail){
+	    this.isOpen = false;
+	    this.$.droplist.close();
+	    this.isSelected = true;
+	    this.selected = detail.product;
+	    this.fire('product-selected',{product: this.selected});
+	},
+	
+	ready: function(){
+	    var all = {"products":[{"product-code":"0001","kind":"term-loan-product","name":"Cash loan in EUR","description":"Lorem ipsum dolor sit amet, intellegam disputando liberavisse et nec, et ius scripta alterum epicuri. Id has debitis epicurei hendrerit.","status":"available","primary-market-segment-name":"individuals","image-url":"public/cash-loan-1.jpg","cover-image-url":"public/cash-loan-3.jpg","primary-currency":"EUR","allowed-currencies":["EUR"],"maximal-amount":{"amount":8000.0,"code":"EUR"},"minimal-amount":{"amount":300.0,"code":"EUR"}},{"product-code":"0002","kind":"term-loan-product","name":"Cash loan in RSD","description":"Lorem ipsum dolor sit amet, intellegam disputando liberavisse et nec, et ius scripta alterum epicuri.","status":"available","primary-market-segment-name":"individuals","image-url":"public/cash-loan-2.jpg","cover-image-url":"public/cash-loan-4.jpg","primary-currency":"RSD","allowed-currencies":["RSD"],"maximal-amount":{"amount":100000.0,"code":"RSD"},"minimal-amount":{"amount":30000.0,"code":"RSD"}},{"product-code":"0003","kind":"term-loan-product","name":"Car loan","description":"Lorem ipsum dolor sit amet, intellegam disputando liberavisse et nec.","status":"available","primary-market-segment-name":"individuals","image-url":"public/car-loan-1.jpg","cover-image-url":"public/car-loan-2.jpg","primary-currency":"EUR","allowed-currencies":["EUR"],"maximal-amount":{"amount":80000.0,"code":"EUR"},"minimal-amount":{"amount":5000.0,"code":"EUR"}},{"product-code":"0004","kind":"term-loan-product","name":"Housing loan","description":"Lorem ipsum dolor sit amet, intellegam disputando liberavisse et nec, et ius scripta alterum epicuri. Id has debitis epicurei hendrerit.","status":"available","primary-market-segment-name":"individuals","image-url":"public/home-loan-1.jpg","cover-image-url":"public/home-loan-2.jpg","primary-currency":"EUR","allowed-currencies":["EUR"],"maximal-amount":{"amount":200000.0,"code":"EUR"},"minimal-amount":{"amount":10000.0,"code":"EUR"}}]};
+	    this.products = all.products;
+	}
+	    
+    });
+  </script>
+</dom-module>

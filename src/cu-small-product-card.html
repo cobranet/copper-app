@@ -1,0 +1,70 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/image-mask/image-mask.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<dom-module id="cu-small-product-card">
+  <template>
+      <style include="iron-flex iron-flex-alignment">
+      :host {
+	  display: inline-block;
+       }
+       .small-product {
+	   padding: 10px;
+	   margin-top: 10px;
+       }
+       .name {
+	   margin-left: 20px;
+	   color: var(--primary-text-color);
+       }
+       .bottom_text {
+	   font-size: 60%;
+	   color: #666;
+	   margin-left: 20px;
+       }
+       .primage {
+	   padding: 3px;
+       }
+       .scard {
+	   width: 100%;
+	   padding: 10px;
+       }
+    </style>
+    <div on-tap ="_clickOnProduct" class="layout horizontal center scard">
+	<div class="im" >
+	    <image-mask class="primage" shape="circle" size="40" src$="{{_image(product)}}">
+	  </image-mask>
+	</div>
+	<div class="flex layout vertical">
+	    <div class="name">{{product.name}}</div>
+	    <div class="bottom_text">{{_bottomtext(product)}}<span></div>
+	</div>
+    </div>
+  </template>
+  <script>
+   Polymer({
+       is: 'cu-small-product-card',
+       properties: {
+	   product: {
+	       type: Object,
+	       observer: '_productChanged'
+	   }
+       },
+       _clickOnProduct : function(e){
+	   this.fire('product-clicked',{product: this.product});
+       },
+       _bottomtext: function(product){
+	   return product.description;
+       },
+       _productChanged: function(){
+	   return;
+       },
+       _image: function(product){
+	   var name = product['image-url'];
+	   name = name.replace('public/','images/');
+	   return name;
+       }
+   });
+  </script>
+</dom-module>

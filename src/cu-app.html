@@ -26,7 +26,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template>
     <style>
       :host {
-        --app-primary-color: #4285f4;
+        --app-primary-color: var(--default-primary-color);
         --app-secondary-color: black;
 
         display: block;
@@ -82,7 +82,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 		<iron-icon icon="home"></iron-icon>
 		<span>Simulation</span>
 	    </a>
-            <a name="view3" href="/products">
+            <a name="products" href="/products">
 		<iron-icon icon="home"></iron-icon><span>Products</span></a>
         </iron-selector>
       </app-drawer>
@@ -93,7 +93,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <app-header condenses reveals effects="waterfall">
           <app-toolbar>
             <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-            <div main-title>My App</div>
+            <div main-title>COPPER Loan Origination</div>
 	    <paper-icon-button icon="icons:account-circle"></paper-icon-button>
           </app-toolbar>
         </app-header>
@@ -105,7 +105,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             role="main">
           <cu-home name="home"></cu-home>
           <cu-simulation name="simulation"></cu-simulation>
-          <my-view3 name="view3"></my-view3>
+	  <cu-products-data products="{{products}}"></cu-products-data>
+          <cu-products products="{{products}}" name="products"><cu-products>
           <cu-view404 name="view404"></cu-view404>
         </iron-pages>
       </app-header-layout>
